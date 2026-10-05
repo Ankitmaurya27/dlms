@@ -5,6 +5,15 @@ R = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); sys.path.insert
 from ml.forecast import forecast
 DB = os.path.join(R, 'database', 'dlms.db')
 app = FastAPI(title='Defence Logistics Management System')
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 now = lambda: dt.datetime.now().strftime('%Y-%m-%d %H:%M')
 today = dt.date.today
 lvl = lambda r: 'LOW' if r < 25 else 'MODERATE' if r < 50 else 'HIGH' if r < 75 else 'CRITICAL'
