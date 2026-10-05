@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY,username TEXT UNIQUE,pw TEXT,role TEXT);
+CREATE TABLE IF NOT EXISTS locations(id INTEGER PRIMARY KEY,name TEXT,type TEXT,lat REAL,lon REAL,last_supply TEXT);
+CREATE TABLE IF NOT EXISTS inventory(id INTEGER PRIMARY KEY,code TEXT,name TEXT,category TEXT,location_id INTEGER REFERENCES locations(id) ON DELETE CASCADE,qty REAL,threshold REAL,daily REAL,unit_value REAL DEFAULT 100,updated TEXT);
+CREATE TABLE IF NOT EXISTS inventory_transactions(id INTEGER PRIMARY KEY,inventory_id INTEGER REFERENCES inventory(id) ON DELETE CASCADE,delta REAL,reason TEXT,ts TEXT);
+CREATE TABLE IF NOT EXISTS consumption_history(id INTEGER PRIMARY KEY,inventory_id INTEGER REFERENCES inventory(id) ON DELETE CASCADE,day TEXT,qty REAL);
+CREATE TABLE IF NOT EXISTS demand_forecasts(id INTEGER PRIMARY KEY,inventory_id INTEGER REFERENCES inventory(id) ON DELETE CASCADE,days INTEGER,predicted REAL,shortage_prob REAL,recommended REAL,confidence REAL,ts TEXT);
+CREATE TABLE IF NOT EXISTS vehicles(id INTEGER PRIMARY KEY,code TEXT,type TEXT,capacity REAL,location_id INTEGER REFERENCES locations(id),dest_id INTEGER REFERENCES locations(id),status TEXT DEFAULT 'AVAILABLE',eta TEXT);
+CREATE TABLE IF NOT EXISTS routes(id INTEGER PRIMARY KEY,src INTEGER REFERENCES locations(id),dst INTEGER REFERENCES locations(id),name TEXT,km REAL,hours REAL,risk REAL,ts TEXT);
+CREATE TABLE IF NOT EXISTS weather_data(location_id INTEGER PRIMARY KEY REFERENCES locations(id) ON DELETE CASCADE,temp REAL,rain REAL,visibility REAL,wind REAL,cond TEXT,road TEXT,terrain INTEGER);
+CREATE TABLE IF NOT EXISTS alerts(id INTEGER PRIMARY KEY,ts TEXT,severity TEXT,category TEXT,location TEXT,msg TEXT,action TEXT,is_read INTEGER DEFAULT 0,resolved INTEGER DEFAULT 0);
+CREATE TABLE IF NOT EXISTS resupply_requests(id INTEGER PRIMARY KEY,inventory_id INTEGER REFERENCES inventory(id) ON DELETE CASCADE,qty REAL,priority TEXT,dispatch TEXT,source TEXT,route TEXT,eta_hours REAL,vehicle TEXT,ts TEXT);
